@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplikasi Ujian Online Pro-Proctoring</title>
+    <style>
+    /* 1. BACKGROUND UTAMA YANG MENARIK DAN ELEGAN */
+    body { 
+        font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Arial, sans-serif; 
+        background-color: #f8fafc;
+        margin: 0; 
+        padding: 20px; 
+        display: flex; 
+        justify-content: center; 
+        align-items: center; 
+        min-height: 100vh; 
+        box-sizing: border-box; 
+    }
+    
+    /* 2. KARTU UTAMA (LOGIN & SOAL) DENGAN EFEK MELAYANG */
+    .container { 
+    background: #ffffff; /* Putih bersih agar kontras dengan BG abu-abu */
+    padding: 40px 30px; 
+    border-radius: 20px; 
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05); /* Bayangan tipis agar terlihat melayang */
+    width: 100%; 
+    max-width: 550px; 
+    text-align: center; 
+    position: relative;
+    border: 1px solid #e2e8f0; /* Garis tepi tipis penegas kartu */
+}
+    
+    /* Ukuran container otomatis melebar ketika masuk ke halaman lembar ujian agar nyaman dibaca */
+    #ujianSection:not(.hidden) ~ * or .container:has(#ujianSection:not(.hidden)) {
+        max-width: 750px;
+    }
+    
+    /* 3. DESAIN HEADER / JUDUL */
+    h2 { 
+        color: #1b365d; 
+        font-size: 24px;
+        font-weight: 700;
+        margin-top: 0; 
+        margin-bottom: 8px; 
+        letter-spacing: -0.5px;
+    }
+    
+    .subtitle-login {
+        color: #6c7a9c;
+        font-size: 14px;
+        margin-bottom: 30px;
+    }
+    
+    /* 4. FORM INPUT YANG INTERAKTIF */
+    input[type="text"], input[type="password"] { 
+        width: 100%; 
+        padding: 14px 16px; 
+        margin: 12px 0; 
+        border: 1.5px solid #dbe2ef; 
+        border-radius: 10px; 
+        box-sizing: border-box; 
+        font-size: 15px; 
+        background-color: #f9fbfd;
+        color: #333;
+        transition: all 0.25s ease;
+    }
+    
+    input[type="text"]:focus, input[type="password"]:focus {
+        outline: none;
+        border-color: #3b82f6;
+        background-color: #fff;
+        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12);
+    }
+    
+    /* 5. TOMBOL MODERN & EFEK TRANSISI */
+    button { 
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        color: white; 
+        border: none; 
+        padding: 14px 24px; 
+        border-radius: 10px; 
+        cursor: pointer; 
+        width: 100%; 
+        font-size: 16px; 
+        font-weight: 600; 
+        margin-top: 20px; 
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+        transition: all 0.2s ease; 
+    }
+    
+    button:hover { 
+        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+        transform: translateY(-1px);
+        box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3);
+    }
+    
+    button:active {
+        transform: translateY(1px);
+    }
+    
+    button.btn-mulai { 
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%); 
+        font-size: 18px; 
+        box-shadow: 0 4px 12px rgba(5, 150, 105, 0.2);
+    }
+    
+    button.btn-mulai:hover { 
+        background: linear-gradient(135deg, #059669 0%, #047857 100%); 
+        box-shadow: 0 6px 16px rgba(5, 150, 105, 0.3);
+    }
+    
+    .hidden { display: none !important; }
+    
+    /* 6. PROFIL & DETAIL KONFIRMASI */
+    .foto-profil { 
+        width: 110px; 
+        height: 110px; 
+        border-radius: 50%; 
+        object-fit: cover; 
+        border: 4px solid #fff; 
+        box-shadow: 0 4px 14px rgba(0,0,0,0.1);
+        margin: 10px auto 20px auto; 
+        display: block; 
+        background-color: #f3f4f6; 
+    }
+    
+    .tabel-konfirmasi { 
+        width: 100%; 
+        margin: 25px 0; 
+        border-collapse: collapse; 
+        text-align: left; 
+    }
+    
+    .tabel-konfirmasi td { 
+        padding: 12px 14px; 
+        border-bottom: 1px solid #f1f5f9; 
+        font-size: 15px; 
+        color: #334155;
+    }
+    
+    .tabel-konfirmasi td:first-child { 
+        font-weight: 600; 
+        color: #64748b; 
+        width: 35%; 
+    }
+    
+    .token-box { 
+        background: #f8fafc; 
+        padding: 20px; 
+        border-radius: 12px; 
+        margin-top: 20px; 
+        border: 1px dashed #cbd5e1; 
+    }
+
+    /* 7. DESAIN HEADER SOAL STICKY (MELAYANG DI ATAS) */
+    .header-ujian-sticky { 
+        position: -webkit-sticky; 
+        position: sticky; 
+        top: -20px; 
+        background: rgba(255, 255, 255, 0.98); 
+        padding: 15px 0 10px 0; 
+        border-bottom: 2px solid #f1f5f9; 
+        z-index: 100; 
+        margin-bottom: 25px; 
+    }
+    
+    .info-bar { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    background: #f1f5f9; 
+    padding: 12px 18px; 
+    border-radius: 10px; 
+    font-weight: 600; 
+    font-size: 14px; 
+    color: #1e293b;
+    margin-bottom: 12px; 
+    gap: 15px; /* Memberi jarak aman antara nama/mapel dengan timer */
+    text-align: left;
+}
+
+#infoSiswa {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; /* Otomatis memberi titik tiga (...) jika teks terlalu panjang di HP */
+    max-width: 70%; /* Batas maksimal lebar teks nama - mapel */
+}
+
+.timer-box { 
+    color: #ef4444; 
+    font-size: 16px; 
+    font-weight: 700;
+    white-space: nowrap; /* Mencegah timer terlipat ke bawah */
+}
+    
+    /* BAR INDIKATOR NOMOR SOAL */
+    .bar-indikator { 
+        display: flex; 
+        flex-wrap: wrap; 
+        gap: 6px; 
+        justify-content: center; 
+        padding: 8px; 
+        background: #f8fafc; 
+        border: 1px solid #e2e8f0; 
+        border-radius: 10px; 
+        max-height: 85px; 
+        overflow-y: auto; 
+    }
+    
+    .kotak-nomor { 
+        width: 34px; 
+        height: 34px; 
+        border-radius: 8px; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+        font-size: 13px; 
+        font-weight: 700; 
+        color: white; 
+        cursor: pointer; 
+        border: none; 
+        transition: all 0.15s ease; 
+    }
+    
+    .kotak-nomor:hover {
+        transform: scale(1.08);
+    }
+    
+    .status-belum { 
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); 
+        box-shadow: 0 2px 6px rgba(220, 38, 38, 0.2);
+    } 
+    
+    .status-sudah { 
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); 
+        box-shadow: 0 2px 6px rgba(37, 99, 235, 0.2);
+    }
+
+    /* 8. BLOK AREA LEMBAR SOAL */
+    .soal-box { 
+        text-align: left; 
+        margin-top: 25px; 
+        padding: 20px; 
+        border: 1px solid #e2e8f0; 
+        border-radius: 12px; 
+        background: #fcfdfe; 
+        scroll-margin-top: 170px; 
+        box-shadow: 0 2px 8px rgba(0,0,0,0.01);
+    }
+    
+    .soal-box p {
+        font-size: 16px;
+        color: #1e293b;
+        line-height: 1.5;
+        margin-top: 0;
+    }
+    
+    .opsi { 
+        display: flex;
+        align-items: center;
+        margin: 10px 0; 
+        cursor: pointer; 
+        padding: 12px 14px; 
+        border: 1.5px solid #e2e8f0; 
+        border-radius: 8px; 
+        font-size: 15px;
+        color: #334155;
+        background-color: #fff;
+        transition: all 0.2s ease; 
+    }
+    
+    .opsi:hover { 
+        background: #f8fafc; 
+        border-color: #cbd5e1;
+    }
+    
+    /* Efek jika opsi dipilih */
+    .opsi:has(input:checked) {
+        background-color: #eff6ff;
+        border-color: #3b82f6;
+        color: #1d4ed8;
+        font-weight: 500;
+    }
+    
+    .opsi input { 
+        margin-right: 12px; 
+        width: 16px;
+        height: 16px;
+        cursor: pointer;
+    }
+    
+    .peringatan { color: #ef4444; font-weight: 600; margin-top: 12px; font-size: 14px; text-align: left; }
+    .timer-box { color: #ef4444; font-size: 16px; font-weight: 700; }
+
+    /* 9. LAYAR PEMUATAN (LOADING OVERLAY) */
+    .loading-overlay { 
+        position: fixed; 
+        top: 0; 
+        left: 0; 
+        width: 100%; 
+        height: 100%; 
+        background: rgba(241, 245, 249, 0.9); 
+        backdrop-filter: blur(6px); 
+        display: flex; 
+        flex-direction: column; 
+        justify-content: center; 
+        align-items: center; 
+        z-index: 9999; 
+    }
+    
+    .spinner { 
+        width: 45px; 
+        height: 45px; 
+        border: 4px solid #e2e8f0; 
+        border-top: 4px solid #3b82f6; 
+        border-radius: 50%; 
+        animation: putar 0.8s linear infinite; 
+    }
+    
+    @keyframes putar { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<div id="loadingOverlay" class="loading-overlay hidden">
+    <div class="spinner"></div>
+    <div id="loadingText" style="margin-top: 15px; font-weight: bold; color: #333;">Memuat Data...</div>
+</div>
+
+<div class="container">
+    <!-- 1. HALAMAN LOGIN -->
+<div id="loginSection">
+    <h2>LOGIN UJIAN ONLINE</h2>
+    
+    <input type="text" id="username" placeholder="Masukkan NISN / Username">
+    <input type="password" id="password" placeholder="Masukkan Password">
+    <button onclick="prosesLogin()">MASUK UJIAN</button>
+</div>
+
+    <!-- 2. HALAMAN KONFIRMASI DATA -->
+    <div id="konfirmasiSection" class="hidden">
+        <h2>KONFIRMASI DATA PESERTA</h2>
+        <img id="konfFoto" class="foto-profil" src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Foto Siswa">
+        
+        <table class="tabel-konfirmasi">
+            <tr><td>Nama Peserta</td><td id="konfNama">-</td></tr>
+            <tr><td>Kelas</td><td id="konfKelas">-</td></tr>
+            <tr><td>Mata Pelajaran</td><td id="konfMapel">-</td></tr>
+            <tr><td>Alokasi Waktu</td><td id="konfWaktu">-</td></tr>
+        </table>
+
+        <div class="token-box">
+            <label style="font-weight: bold; display: block; margin-bottom: 5px;">Masukkan Token Ujian:</label>
+            <input type="text" id="inputToken" placeholder="Masukkan token dari papan tulis" style="text-align: center; font-size: 18px; font-weight: bold; letter-spacing: 3px; text-transform: uppercase;">
+        </div>
+        
+        <button class="btn-mulai" onclick="validasiDanMulai()">MULAI UJIAN</button>
+    </div>
+
+    <!-- 3. HALAMAN LEMBAR UJIAN -->
+    <div id="ujianSection" class="hidden">
+        <!-- Bagian ini akan tetap diam di atas saat di-scroll -->
+        <div class="header-ujian-sticky">
+            <div class="info-bar">
+                <div id="infoSiswa">Nama Siswa</div>
+                <div id="timerBox" class="timer-box">Sisa Waktu: --:--</div>
+            </div>
+            <!-- Wadah Indikator Nomor -->
+            <div id="barIndikator" class="bar-indikator"></div>
+            <p id="pelanggaranTeks" class="peringatan">Pelanggaran: 0 / 3</p>
+        </div>
+        
+        <!-- Wadah Soal-Soal -->
+        <div id="soalContainer"></div>
+        <button onclick="validasiSelesaiUjian()">SELESAI & KIRIM JAWABAN</button>
+    </div>
+
+    <!-- 4. HALAMAN SELESAI -->
+    <div id="selesaiSection" class="hidden">
+        <h2 id="statusAkhirTeks">Ujian Selesai!</h2>
+        <p id="pesanAkhirTeks">Terima kasih telah mengikuti ujian dengan jujur. Data Anda telah aman dikirim ke Google Sheets.</p>
+    </div>
+</div>
+
+<script>
+    // ===================================================
+    // ⚠️ WAJIB GANTI DENGAN URL WEB APP APPS SCRIPT ANDA
+    // ===================================================
+    const urlAppsScript = "https://script.google.com/macros/s/AKfycby6rCYMf_7srRfNkwN-KsYls0mHVbPobIDs4eOYg6XSkCVUJjLW_5beiwhF7Go8D3g0/exec"; 
+    
+    let bankSoal = [];
+    let dataSiswa = {};
+    let jumlahPelanggaran = 0;
+    let ujianAktif = false;
+    let hitungMundur; 
+    let intervalCekStatus; 
+    let sisaWaktuDetik; 
+    let namaMapelUjian = ""; 
+    
+    // --- PROTEKSI INTEGRITAS ---
+    document.addEventListener('contextmenu', e => e.preventDefault());
+    document.addEventListener('copy', e => e.preventDefault());
+    document.addEventListener('paste', e => e.preventDefault());
+    document.addEventListener('keydown', e => {
+        if (e.ctrlKey && ['c', 'v', 'u'].includes(e.key)) e.preventDefault();
+        if (e.key === 'F12') e.preventDefault();
+    });
+
+    document.addEventListener("visibilitychange", () => {
+        if (document.hidden && ujianAktif) catatPelanggaran("Pindah tab / membuka aplikasi lain.");
+    });
+
+    document.addEventListener('fullscreenchange', () => {
+        if (!document.fullscreenElement && ujianAktif) catatPelanggaran("Keluar dari mode layar penuh.");
+    });
+
+    function catatPelanggaran(alasan) {
+        jumlahPelanggaran++;
+        document.getElementById("pelanggaranTeks").innerText = `Pelanggaran: ${jumlahPelanggaran} / 3`;
+        if (jumlahPelanggaran >= 3) {
+            alert("Batas pelanggaran habis! Ujian otomatis ditutup.");
+            selesaiUjian(true);
+        } else {
+            alert(`PERINGATAN! Jangan ${alasan}.`);
+            document.documentElement.requestFullscreen().catch(() => {});
+        }
+    }
+
+    // --- LOGIKA ALUR APLIKASI ---
+    function tampilkanLoading(teks) { document.getElementById("loadingText").innerText = teks; document.getElementById("loadingOverlay").classList.remove("hidden"); }
+    function sembunyikanLoading() { document.getElementById("loadingOverlay").classList.add("hidden"); }
+
+    function prosesLogin() {
+        const user = document.getElementById("username").value;
+        const pass = document.getElementById("password").value;
+        if(!user || !pass) return alert("Mohon isi lengkap!");
+
+        tampilkanLoading("Memverifikasi...");
+        fetch(urlAppsScript, { method: 'POST', body: JSON.stringify({ action: "login", username: user, password: pass }) })
+        .then(res => res.json())
+        .then(res => {
+            if(res.status === "success") {
+                dataSiswa = { username: user, nama: res.siswa.nama, kelas: res.siswa.kelas, foto: res.siswa.foto };
+                muatSoalDanConfigKeMemori();
+            } else { sembunyikanLoading(); alert(res.message); }
+        }).catch(() => { sembunyikanLoading(); alert("Error Jaringan."); });
+    }
+
+    function muatSoalDanConfigKeMemori() {
+        tampilkanLoading("Mempersiapkan Lembar Ujian...");
+        
+        Promise.all([
+            fetch(urlAppsScript, { method: 'POST', body: JSON.stringify({ action: "get_soal" }) }).then(res => res.json()),
+            fetch(urlAppsScript, { method: 'POST', body: JSON.stringify({ action: "get_token_status" }) }).then(res => res.json())
+        ])
+        .then(([dataSoal, dataConfig]) => {
+            bankSoal = dataSoal;
+            
+            document.getElementById("konfNama").innerText = dataSiswa.nama;
+            document.getElementById("konfKelas").innerText = dataSiswa.kelas;
+            document.getElementById("konfMapel").innerText = dataConfig.mapel; 
+            document.getElementById("konfWaktu").innerText = `${dataConfig.waktu} Menit`; 
+            
+            if(dataSiswa.foto) document.getElementById("konfFoto").src = dataSiswa.foto;
+            
+            sembunyikanLoading();
+            document.getElementById("loginSection").classList.add("hidden");
+            document.getElementById("konfirmasiSection").classList.remove("hidden");
+        }).catch(() => { sembunyikanLoading(); alert("Gagal memuat data persiapan ujian."); });
+    }
+
+    function validasiDanMulai() {
+        const tokenInput = document.getElementById("inputToken").value.trim().toUpperCase();
+        if(!tokenInput) return alert("Token tidak boleh kosong!");
+
+        tampilkanLoading("Mengecek Status Sesi Ujian...");
+        
+        fetch(urlAppsScript, { method: 'POST', body: JSON.stringify({ action: "get_token_status" }) })
+        .then(res => res.json())
+        .then(res => {
+            sembunyikanLoading();
+            
+            if(res.status !== "AKTIF") {
+                return alert("Gagal masuk! Sesi ujian belum diaktifkan oleh pengawas di ruang pusat.");
+            }
+            
+            if(tokenInput !== res.token.toUpperCase()) {
+                return alert("Token salah! Perhatikan tulisan di papan tulis.");
+            }
+
+            namaMapelUjian = res.mapel;
+            const durasiMenit = parseInt(res.waktu) || 60; 
+            sisaWaktuDetik = durasiMenit * 60;
+
+            mulaiUjianResmi();
+        }).catch(() => { sembunyikanLoading(); alert("Gagal verifikasi dengan server."); });
+    }
+
+    function mulaiUjianResmi() {
+        let container = document.getElementById("soalContainer");
+        let barIndikator = document.getElementById("barIndikator");
+        
+        container.innerHTML = "";
+        barIndikator.innerHTML = "";
+        
+        bankSoal.forEach((soal, index) => {
+            // 1. Render Elemen Soal
+            container.innerHTML += `
+                <div class="soal-box" id="blokSoal${soal.id}">
+                    <p><strong>Soal ${index + 1}:</strong> ${soal.pertanyaan}</p>
+                    <label class="opsi"><input type="radio" name="soal${soal.id}" value="A" onchange="updateIndikator(${soal.id})"> A. ${soal.a}</label>
+                    <label class="opsi"><input type="radio" name="soal${soal.id}" value="B" onchange="updateIndikator(${soal.id})"> B. ${soal.b}</label>
+                    <label class="opsi"><input type="radio" name="soal${soal.id}" value="C" onchange="updateIndikator(${soal.id})"> A. ${soal.c}</label>
+                    <label class="opsi"><input type="radio" name="soal${soal.id}" value="D" onchange="updateIndikator(${soal.id})"> D. ${soal.d}</label>
+                </div>`;
+                
+            // 2. Render Kotak Nomor Indikator (Default: Merah / Belum)
+            barIndikator.innerHTML += `
+                <button type="button" class="kotak-nomor status-belum" id="navNo${soal.id}" onclick="lompatKeSoal(${soal.id})">
+                    ${index + 1}
+                </button>`;
+        });
+
+        document.documentElement.requestFullscreen().then(() => {
+            ujianAktif = true;
+            document.getElementById("konfirmasiSection").classList.add("hidden");
+            document.getElementById("ujianSection").classList.remove("hidden");
+            document.getElementById("infoSiswa").innerText = `${dataSiswa.nama} - ${namaMapelUjian}`;
+            
+            mulaiTimerUjian();
+            intervalCekStatus = setInterval(cekStatusProktorDiLatarBelakang, 20000);
+        }).catch(() => alert("Wajib masuk mode Fullscreen untuk mengikuti ujian!"));
+    }
+
+    // Fungsi Mengubah Warna Nomor Indikator (Merah -> Biru)
+    function updateIndikator(idSoal) {
+        let tombolNav = document.getElementById(`navNo${idSoal}`);
+        if(tombolNav) {
+            tombolNav.classList.remove("status-belum");
+            tombolNav.classList.add("status-sudah");
+        }
+    }
+
+    // Fungsi Klik Nomor Indikator Untuk Lompat Gulir ke Soal Tertentu
+    function lompatKeSoal(idSoal) {
+        let targetSoal = document.getElementById(`blokSoal${idSoal}`);
+        if(targetSoal) {
+            targetSoal.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }
+
+    function cekStatusProktorDiLatarBelakang() {
+        if(!ujianAktif) return;
+        
+        fetch(urlAppsScript, { method: 'POST', body: JSON.stringify({ action: "get_token_status" }) })
+        .then(res => res.json())
+        .then(res => {
+            if(res.status === "NONAKTIF") {
+                clearInterval(intervalCekStatus);
+                alert("Ujian telah dinonaktifkan / ditutup secara massal oleh Pengawas!");
+                selesaiUjian(false);
+            }
+        });
+    }
+
+    function mulaiTimerUjian() {
+        hitungMundur = setInterval(() => {
+            let menit = Math.floor(sisaWaktuDetik / 60);
+            let detik = sisaWaktuDetik % 60;
+            document.getElementById("timerBox").innerText = `Sisa Waktu: ${(menit<10?"0":"")+menit}:${(detik<10?"0":"")+detik}`;
+            
+            if (sisaWaktuDetik <= 0) {
+                clearInterval(hitungMundur);
+                alert("Waktu habis! Jawaban otomatis dikirim.");
+                selesaiUjian(false);
+            }
+            sisaWaktuDetik--;
+        }, 1000);
+    }
+
+    // Validasi Kelayakan Klik Tombol Selesai (Semua Harus Biru)
+    function validasiSelesaiUjian() {
+        let belumTerjawab = document.querySelectorAll(".bar-indikator .status-belum");
+        
+        if(belumTerjawab.length > 0) {
+            alert(`Gagal mengirim! Masih ada ${belumTerjawab.length} soal yang BELUM ANDA JAWAB (berwarna merah). Silakan lengkapi terlebih dahulu.`);
+            return;
+        }
+        
+        // Jika sudah terisi semua, konfirmasi akhir
+        if(confirm("Apakah Anda yakin ingin mengakhiri ujian dan mengirimkan semua jawaban?")) {
+            selesaiUjian(false);
+        }
+    }
+
+    function selesaiUjian(terdeteksiCurang) {
+        clearInterval(hitungMundur);
+        clearInterval(intervalCekStatus);
+        ujianAktif = false;
+        tampilkanLoading("Mengirim Lembar Jawaban...");
+        
+        let benar = 0;
+        bankSoal.forEach(soal => {
+            let jawaban = document.querySelector(`input[name="soal${soal.id}"]:checked`)?.value;
+            if (jawaban === soal.kunci.toString()) benar++;
+        });
+
+        let skor = bankSoal.length > 0 ? (benar / bankSoal.length) * 100 : 0;
+        let statusKecurangan = terdeteksiCurang ? "CURANG (Otomatis Submit)" : (jumlahPelanggaran > 0 ? `Pernah Pindah Tab (${jumlahPelanggaran}x)` : "JUJUR");
+
+        fetch(urlAppsScript, {
+            method: 'POST',
+            body: JSON.stringify({
+                action: "submit_ujian", username: dataSiswa.username, nama: dataSiswa.nama, kelas: dataSiswa.kelas, skor: skor, statusKecurangan: statusKecurangan
+            })
+        }).then(() => {
+            sembunyikanLoading();
+            document.exitFullscreen().catch(() => {}); 
+            document.getElementById("ujianSection").classList.add("hidden");
+            document.getElementById("selesaiSection").classList.remove("hidden");
+            
+            if (terdeteksiCurang) {
+                document.getElementById("statusAkhirTeks").innerText = "Ujian Diblokir!";
+                document.getElementById("statusAkhirTeks").style.color = "red";
+                document.getElementById("pesanAkhirTeks").innerText = "Batas keluar aplikasi terlampaui. Ujian Anda langsung dibekukan.";
+            }
+        }).catch(() => { sembunyikanLoading(); alert("Masalah jaringan. Hasil gagal terkirim, mohon klik ulang."); ujianAktif = true; });
+    }
+</script>
+</body>
+</html>
