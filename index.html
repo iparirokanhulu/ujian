@@ -245,8 +245,8 @@
 
     /* 3. Kuning/Oranye: Penanda Soal Aktif */
     .status-aktif {
-        border: 3px solid #ffff00 !important;
-        transform: scale(1.12);
+        border: 2px solid #0000ff !important;
+        transform: scale(1);
         z-index: 2;
     }
 
@@ -283,6 +283,38 @@
     .peringatan { color: #ef4444; font-weight: 600; margin-top: 12px; font-size: 14px; text-align: left; }
 
     /* TOMBOL NAVIGASI SOAL (PREV / NEXT) */
+    .soal-box { 
+        text-align: left; 
+        margin-top: 15px; 
+        padding: 20px; 
+        border: 1px solid #e2e8f0; 
+        border-radius: 12px; 
+        background: #fcfdfe; 
+        box-shadow: 0 2px 8px rgba(0,0,0,0.01);
+    }
+    
+    .soal-box p { font-size: 16px; color: #1e293b; line-height: 1.5; margin-top: 0; }
+    
+    .opsi { 
+        display: flex;
+        align-items: center;
+        margin: 10px 0; 
+        cursor: pointer; 
+        padding: 12px 14px; 
+        border: 1.5px solid #e2e8f0; 
+        border-radius: 8px; 
+        font-size: 15px;
+        color: #334155;
+        background-color: #fff;
+        transition: all 0.2s ease; 
+    }
+    
+    .opsi:hover { background: #f8fafc; border-color: #cbd5e1; }
+    .opsi:has(input:checked) { background-color: #eff6ff; border-color: #3b82f6; color: #1d4ed8; font-weight: 500; }
+    .opsi input { margin-right: 12px; width: 16px; height: 16px; cursor: pointer; }
+    .peringatan { color: #ef4444; font-weight: 600; margin-top: 12px; font-size: 14px; text-align: left; }
+
+    /* 8 TOMBOL NAVIGASI SOAL (PREV / NEXT DENGAN GAYA SAMA BERSAMA) */
     .navigasi-soal-box {
         display: flex;
         justify-content: space-between;
@@ -296,57 +328,38 @@
         padding: 12px 20px;
         margin-top: 0;
         font-size: 14px;
-        background: #f1f5f9;
-        color: #334155;
-        border: 1px solid #cbd5e1;
-        box-shadow: none;
+        font-weight: 600;
+        background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+        transition: all 0.2s ease;
     }
 
     .btn-nav-soal:hover {
-        background: #e2e8f0;
-        color: #0f172a;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+        color: white;
+        transform: translateY(-1px);
+        box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3);
     }
 
-    .btn-nav-next {
-    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-    color: white;
-    border: none;
-}
+    .btn-nav-soal:active {
+        transform: translateY(1px);
+    }
 
-.btn-nav-next:hover {
-    background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
-}
+    .btn-nav-selesai {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+        border: none;
+        box-shadow: 0 4px 12px rgba(5, 150, 105, 0.2);
+    }
 
-/* Teks tetap putih saat tombol difokuskan setelah diklik */
-.btn-nav-next:focus {
-    color: white;
-}
+    .btn-nav-selesai:hover {
+        background: linear-gradient(135deg, #059669 0%, #047857 100%);
+        box-shadow: 0 6px 16px rgba(5, 150, 105, 0.3);
+    }
 
-/* Teks berubah jadi hitam HANYA saat tombol sedang ditekan */
-.btn-nav-next:active {
-    color: black;
-}
-
-          .btn-nav-selesai {
-    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-    color: white;
-    border: none;
-}
-
-.btn-nav-selesai:hover {
-    background: linear-gradient(135deg, #059669 0%, #047857 100%);
-}
-
-/* Memastikan teks tetap putih setelah diklik (fokus) */
-.btn-nav-selesai:focus {
-    color: white;
-}
-
-/* Teks berubah hitam HANYA saat tombol sedang ditekan */
-.btn-nav-selesai:active {
-    color: black;
-}
 
     /* 9. LAYAR PEMUATAN */
     .loading-overlay { 
@@ -650,7 +663,7 @@
     }
 
     function muatSoalDanConfigKeMemori() {
-        tampilkanLoading("Mempersiapkan Lembar Ujian...");
+        tampilkanLoading("Mengkonfirmasi Peserta Ujian...");
         
         Promise.all([
             fetch(urlAppsScript, { method: 'POST', body: JSON.stringify({ action: "get_soal" }) }).then(res => res.json()),
@@ -697,7 +710,7 @@
         const tokenInput = document.getElementById("inputToken").value.trim().toUpperCase();
         if(!tokenInput) return alert("Token tidak boleh kosong!");
 
-        tampilkanLoading("Mengecek Status Sesi Ujian...");
+        tampilkanLoading("Mempersiapkan Lembar Ujian...");
         fetch(urlAppsScript, { method: 'POST', body: JSON.stringify({ action: "get_token_status" }) })
         .then(res => res.json())
         .then(res => {
